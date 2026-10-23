@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AFR Digital Business Card</title>
+<meta name="theme-color" content="#0D4075">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<style>
+  :root{
+    --navy:#0D4075; --navy-deep:#072A52; --navy-ink:#0B2240;
+    --cream:#F4F8E9; --paper:#FFFFFF; --line:#E4E0D6;
+    --muted:#5B6578; --sky:#CFDDEE; --radius:24px;
+    --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--font); color:var(--navy-ink); background:var(--cream); -webkit-font-smoothing:antialiased;
+    min-height:100vh; display:flex; justify-content:center; align-items:flex-start}
+  .wrap{width:100%; max-width:440px}
+  .card{background:var(--paper); overflow:hidden; min-height:100vh}
+  .hero{position:relative; color:#fff; isolation:isolate;
+    background:linear-gradient(160deg,#11497F 0%,var(--navy) 40%,var(--navy-deep) 100%);
+    padding:calc(22px + env(safe-area-inset-top)) 24px 30px}
+  .hero svg.arcs{position:absolute; inset:0; width:100%; height:100%; z-index:-1; pointer-events:none}
+  .top{display:flex; justify-content:space-between; align-items:flex-start; gap:12px}
+  .brand{display:flex; align-items:center; gap:12px}
+  .logo{height:40px; width:auto; display:block}
+  .bname{font-size:15px; line-height:1.15; font-weight:500; color:var(--cream)}
+  .tag{font-size:10.5px; letter-spacing:.18em; line-height:1.5; text-align:right; color:var(--sky); font-weight:600; padding-top:4px}
+  h1{font-size:32px; line-height:1.1; font-weight:700; letter-spacing:-.01em; margin:40px 0 10px; word-break:break-word}
+  .role{font-size:12.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--sky); font-weight:600; margin:0}
+  .org{font-size:15px; margin:6px 0 0; opacity:.92}
+  .slogan{display:inline-block; margin-top:22px; font-size:12px; letter-spacing:.06em; opacity:.75;
+    border-top:1px solid rgba(255,255,255,.28); padding-top:10px}
+  .body{padding:22px 20px 28px}
+  .save{display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
+    background:var(--navy); color:#fff; text-decoration:none; font:600 16px var(--font);
+    padding:16px 18px; border-radius:14px; border:0; cursor:pointer; box-shadow:0 8px 20px -10px rgba(13,64,117,.55)}
+  .actions{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:14px 0 24px}
+  .actions.three{grid-template-columns:repeat(3,1fr)}
+  .act{display:flex; flex-direction:column; align-items:center; gap:8px; text-decoration:none; color:var(--navy);
+    font-size:12.5px; font-weight:600; padding:14px 4px 12px; border:1px solid var(--line); border-radius:14px; background:#FBFAF7}
+  .act svg{width:22px; height:22px}
+  .list{list-style:none; margin:0; padding:0; border-top:1px solid var(--line)}
+  .list li{border-bottom:1px solid var(--line)}
+  .list a{display:flex; align-items:center; gap:14px; padding:14px 2px; text-decoration:none; color:inherit}
+  .ic{flex:0 0 38px; height:38px; border-radius:10px; background:#EAF0F7; color:var(--navy); display:grid; place-items:center}
+  .ic svg{width:18px; height:18px}
+  .lbl{display:block; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:600}
+  .val{display:block; font-size:15.5px; font-weight:500; margin-top:2px; word-break:break-word}
+  footer{text-align:center; font-size:11.5px; color:var(--muted); padding:6px 20px 26px; letter-spacing:.04em}
+  footer a{color:inherit}
+  .empty{padding:48px 24px; text-align:center; color:var(--muted)}
+  .empty a{color:var(--navy); font-weight:600}
+  @media (min-width:900px){
+    body{align-items:center; padding:40px 0}
+    .card{min-height:0; border-radius:var(--radius); box-shadow:0 30px 60px -30px rgba(6,24,51,.45)}
+  }
+  @media (max-width:360px){ h1{font-size:28px} .act{font-size:11.5px} .actions{gap:8px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <main class="card">
+    <header class="hero">
+      <svg class="arcs" viewBox="0 0 440 340" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+        <path d="M120 360 C 220 230, 330 150, 470 120" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="44"/>
+        <path d="M60 380 C 190 260, 320 190, 470 175" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="2"/>
+        <path d="M200 370 C 280 290, 360 240, 470 225" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="1.2"/>
+      </svg>
+      <div class="top">
+        <div class="brand"><img class="logo" src="afr-mark.png" alt="AFR logo"><span class="bname">Alliance for<br>Recruitment</span></div>
+        <div class="tag">DIGITAL<br>BUSINESS CARD</div>
+      </div>
+      <h1 id="name">&nbsp;</h1>
+      <p class="role" id="title"></p>
+      <p class="org">Alliance for Recruitment (AFR)</p>
+      <span class="slogan">#ElevateYourGame</span>
+    </header>
+
+    <section class="body" id="content" hidden>
+      <a class="save" id="save" href="#">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+        Save Contact
+      </a>
+      <nav class="actions" id="actions" aria-label="Quick actions">
+        <a class="act" id="a-call" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>Call</a>
+        <a class="act" id="a-mail" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>Email</a>
+        <a class="act" id="a-li" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4V21H3zM9.5 9.75h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5c0-1.2-.02-2.73-1.66-2.73-1.67 0-1.92 1.3-1.92 2.64V21h-4z"/></svg>LinkedIn</a>
+        <a class="act" href="https://afr.lt" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Website</a>
+      </nav>
+      <ul class="list" id="list"></ul>
+    </section>
+    <div class="empty" id="empty" hidden>This business card link is incomplete.<br><a href="https://afr.lt">afr.lt</a></div>
+    <footer>Alliance for Recruitment · <a href="https://afr.lt" target="_blank" rel="noopener">afr.lt</a></footer>
+  </main>
+</div>
+<script>
+(function(){
+  var ICONS = {
+    phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
+    mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/>',
+    web:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+    li:'<path fill="currentColor" stroke="none" d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4V21H3zM9.5 9.75h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5c0-1.2-.02-2.73-1.66-2.73-1.67 0-1.92 1.3-1.92 2.64V21h-4z"/>'
+  };
+
+  function decode(s){
+    try{
+      s = s.replace(/-/g,'+').replace(/_/g,'/');
+      while (s.length % 4) s += '=';
+      var bin = atob(s), bytes = new Uint8Array(bin.length);
+      for (var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+      return JSON.parse(new TextDecoder().decode(bytes));
+    }catch(e){ return null; }
+  }
+  function clean(v, max){ return (typeof v === 'string' ? v : '').replace(/[\u0000-\u001f]/g,'').trim().slice(0, max); }
+
+  var m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash || '');
+  var d = m ? decode(m[1]) : null;
+  var name = d && clean(d.n, 80), title = d && clean(d.t, 80), email = d && clean(d.e, 120),
+      phone = d && clean(d.p, 30), li = d && clean(d.l, 200);
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email || '')) email = '';
+  if (!/^\+?[0-9 ()-]{6,}$/.test(phone || '')) phone = '';
+  if (!/^https:\/\/([a-z]{2,3}\.)?linkedin\.com\/[^\s"<>]+$/i.test(li || '')) li = '';
+
+  if (!name || (!email && !phone)) { document.getElementById('empty').hidden = false; return; }
+
+  var tel = phone.replace(/[^0-9+]/g,'');
+  document.title = name + ' · Alliance for Recruitment';
+  document.getElementById('name').textContent = name;
+  document.getElementById('title').textContent = title;
+
+  var call = document.getElementById('a-call'), mail = document.getElementById('a-mail'), lin = document.getElementById('a-li');
+  if (tel) call.href = 'tel:' + tel; else call.remove();
+  if (email) mail.href = 'mailto:' + email; else mail.remove();
+  if (li) lin.href = li; else lin.remove();
+  var acts = document.getElementById('actions');
+  if (acts.children.length === 3) acts.className = 'actions three';
+
+  var list = document.getElementById('list');
+  function row(icon, label, value, href, ext){
+    var lia = document.createElement('li'), a = document.createElement('a');
+    a.href = href; if (ext){ a.target = '_blank'; a.rel = 'noopener'; }
+    var ic = document.createElement('span'); ic.className = 'ic';
+    ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ICONS[icon] + '</svg>';
+    var w = document.createElement('span'), l = document.createElement('span'), v = document.createElement('span');
+    l.className = 'lbl'; l.textContent = label; v.className = 'val'; v.textContent = value;
+    w.appendChild(l); w.appendChild(v); a.appendChild(ic); a.appendChild(w); lia.appendChild(a); list.appendChild(lia);
+  }
+  if (tel) row('phone','Phone', phone, 'tel:' + tel);
+  if (email) row('mail','Email', email, 'mailto:' + email);
+  row('web','Website','afr.lt','https://afr.lt', true);
+  if (li) row('li','LinkedIn', name, li, true);
+
+  // vCard 3.0 (UTF-8)
+  function esc(s){ return s.replace(/\\/g,'\\\\').replace(/,/g,'\\,').replace(/;/g,'\\;'); }
+  var parts = name.split(/\s+/), last = parts.length > 1 ? parts.pop() : '', first = parts.join(' ');
+  var v = ['BEGIN:VCARD','VERSION:3.0',
+    'N;CHARSET=UTF-8:' + esc(last) + ';' + esc(first) + ';;;',
+    'FN;CHARSET=UTF-8:' + esc(name),
+    'ORG;CHARSET=UTF-8:Alliance for Recruitment (AFR)'];
+  if (title) v.push('TITLE;CHARSET=UTF-8:' + esc(title));
+  if (tel) v.push('TEL;TYPE=WORK,CELL,VOICE:' + tel);
+  if (email) v.push('EMAIL;TYPE=INTERNET,WORK,PREF:' + email);
+  v.push('URL;TYPE=WORK:https://afr.lt');
+  if (li){ v.push('item1.URL:' + li); v.push('item1.X-ABLabel:LinkedIn'); }
+  v.push('END:VCARD');
+  var vcf = v.join('\r\n') + '\r\n';
+  var file = (name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'contact') + '.vcf';
+
+  var save = document.getElementById('save');
+  var ua = navigator.userAgent || '';
+  var iOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var blob = new Blob([vcf], {type:'text/vcard;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  save.href = url;
+  if (!iOS) save.setAttribute('download', file);
+  document.getElementById('content').hidden = false;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AFR vizitinių generatorius</title>
+<meta name="theme-color" content="#0D4075">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+  :root{
+    --navy:#0D4075; --navy-deep:#072A52; --navy-ink:#0B2240;
+    --cream:#F4F8E9; --paper:#FFFFFF; --line:#E4E0D6; --muted:#5B6578; --sky:#CFDDEE; --err:#B42318;
+    --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--font); color:var(--navy-ink); background:var(--cream); -webkit-font-smoothing:antialiased}
+  .head{background:linear-gradient(160deg,#11497F 0%,var(--navy) 40%,var(--navy-deep) 100%); color:#fff;
+    padding:calc(20px + env(safe-area-inset-top)) 20px 26px}
+  .head .in{max-width:520px; margin:0 auto}
+  .brand{display:flex; align-items:center; gap:12px}
+  .brand img{height:36px}
+  .brand span{font-size:14px; line-height:1.15; color:var(--cream)}
+  .head h1{font-size:26px; line-height:1.15; margin:26px 0 8px}
+  .head p{margin:0; color:var(--sky); font-size:14.5px; line-height:1.45}
+  main{max-width:520px; margin:0 auto; padding:20px 16px 40px}
+  .panel{background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:20px 18px; margin-bottom:16px}
+  h2{font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:0 0 14px}
+  label{display:block; font-size:13px; font-weight:600; margin:14px 0 6px}
+  label:first-of-type{margin-top:0}
+  label small{font-weight:400; color:var(--muted)}
+  input{width:100%; font:16px var(--font); color:var(--navy-ink); padding:12px 14px; border:1px solid #CFCBC0; border-radius:12px; background:#FDFDFB}
+  input:focus{outline:2px solid var(--navy); outline-offset:1px; border-color:var(--navy)}
+  input.bad{border-color:var(--err)}
+  .hint{font-size:12.5px; color:var(--muted); margin-top:6px}
+  .msg{color:var(--err); font-size:13.5px; margin-top:12px; min-height:1em}
+  .btn{display:flex; align-items:center; justify-content:center; gap:10px; width:100%; border:0; cursor:pointer;
+    font:600 16px var(--font); padding:15px 18px; border-radius:14px; text-decoration:none; margin-top:12px}
+  .primary{background:var(--navy); color:#fff; box-shadow:0 8px 20px -10px rgba(13,64,117,.55)}
+  .wallet{background:#000; color:#fff}
+  .ghost{background:#FBFAF7; color:var(--navy); border:1px solid var(--line)}
+  .btn[disabled]{opacity:.6; cursor:default}
+  /* preview card */
+  .pass{border-radius:16px; background:linear-gradient(160deg,#11497F 0%,var(--navy) 45%,var(--navy-deep) 100%); color:#fff; padding:14px 16px 16px}
+  .pass .row{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
+  .pass .lg{display:flex; align-items:center; gap:8px; font-weight:600; font-size:14px}
+  .pass .lg img{height:24px}
+  .pl{font-size:9.5px; letter-spacing:.06em; color:var(--sky); font-weight:600; text-transform:uppercase}
+  .pv{font-size:14px; margin-top:2px; word-break:break-word}
+  .pass .big{font-size:24px; margin-top:3px; line-height:1.15; word-break:break-word}
+  .pass .r{text-align:right}
+  .pass .sec{margin:20px 0 14px}
+  .pass .grid{display:flex; justify-content:space-between; gap:12px; margin-top:10px}
+  .qrbox{background:#fff; border-radius:10px; width:150px; margin:16px auto 0; padding:8px 8px 4px; text-align:center}
+  .qrbox canvas{width:134px; height:134px; display:block}
+  .qrbox div{color:#000; font-size:10px; letter-spacing:.04em; margin-top:3px}
+  #result[hidden]{display:none}
+  .linkbox{display:flex; gap:8px; margin-top:10px}
+  .linkbox input{font-size:13px; padding:10px 12px}
+  .linkbox button{flex:0 0 auto; font:600 13px var(--font); padding:0 14px; border-radius:12px; border:1px solid var(--line); background:#FBFAF7; color:var(--navy); cursor:pointer}
+  .steps{margin:8px 0 0; padding-left:20px; font-size:14px; line-height:1.55}
+  .note{font-size:12.5px; color:var(--muted); line-height:1.5; margin-top:12px}
+  .phoneqr{display:none; text-align:center}
+  .phoneqr canvas{width:180px; height:180px}
+  @media (min-width:700px){ .phoneqr{display:block} }
+</style>
+</head>
+<body>
+<header class="head"><div class="in">
+  <div class="brand"><img src="afr-mark.png" alt="AFR logo"><span>Alliance for<br>Recruitment</span></div>
+  <h1>Sukurkite savo AFR skaitmeninę vizitinę</h1>
+  <p>Įveskite savo duomenis – gausite kortelę Apple Wallet, asmeninį vizitinės puslapį ir QR kodą klientams.</p>
+</div></header>
+
+<main>
+  <form class="panel" id="f" novalidate autocomplete="on">
+    <h2>Jūsų duomenys</h2>
+    <label for="n">Vardas ir pavardė</label>
+    <input id="n" name="name" autocomplete="name" maxlength="80" placeholder="Vardenis Pavardenis" required>
+    <label for="t">Pareigos <small>(angliškai, kaip ant vizitinės)</small></label>
+    <input id="t" name="title" autocomplete="organization-title" maxlength="80" placeholder="Business Development Manager" required>
+    <label for="e">El. paštas</label>
+    <input id="e" name="email" type="email" autocomplete="email" maxlength="120" placeholder="vardas@afr.lt" required>
+    <label for="p">Telefonas</label>
+    <input id="p" name="phone" type="tel" autocomplete="tel" maxlength="30" placeholder="+370 600 00000" required>
+    <label for="l">LinkedIn nuoroda <small>(neprivaloma)</small></label>
+    <input id="l" name="linkedin" type="url" maxlength="200" placeholder="https://www.linkedin.com/in/...">
+    <div class="hint">LinkedIn programėlėje: savo profilis → ⋯ → „Share profile“ → „Copy link“.</div>
+    <div class="msg" id="msg" role="alert"></div>
+    <button class="btn primary" type="submit">Sukurti vizitinę</button>
+  </form>
+
+  <section id="result" hidden>
+    <div class="panel">
+      <h2>Jūsų kortelė</h2>
+      <div class="pass" aria-label="Kortelės peržiūra">
+        <div class="row">
+          <div class="lg"><img src="afr-mark.png" alt="">Alliance for Recruitment</div>
+          <div class="r"><div class="pl">Digital</div><div class="pv">BUSINESS CARD</div></div>
+        </div>
+        <div class="sec"><div class="pl" id="pv-t"></div><div class="big" id="pv-n"></div></div>
+        <div class="grid"><div><div class="pl">Email</div><div class="pv" id="pv-e"></div></div><div class="r"><div class="pl">Phone</div><div class="pv" id="pv-p"></div></div></div>
+        <div class="grid"><div><div class="pl">Website</div><div class="pv">afr.lt</div></div><div class="r"><div class="pv">#ElevateYourGame</div></div></div>
+        <div class="qrbox"><canvas id="qr" width="268" height="268"></canvas><div>SCAN TO CONNECT</div></div>
+      </div>
+
+      <button class="btn wallet" id="addwallet" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="5" width="20" height="15" rx="3"/><path d="M2 10h20"/></svg>
+        Add to Apple Wallet
+      </button>
+      <div class="note" id="walletnote">iPhone: paspaudus atsidarys kortelės peržiūra – viršuje dešinėje paspauskite „Add“. Jei naudojate kompiuterį, nuskenuokite QR žemiau telefonu ir paspauskite šį mygtuką ten.</div>
+      <a class="btn ghost" id="openpage" href="#" target="_blank" rel="noopener">Atidaryti mano vizitinės puslapį</a>
+      <button class="btn ghost" id="dlqr" type="button">Atsisiųsti QR kodą (PNG)</button>
+    </div>
+
+    <div class="panel">
+      <h2>Asmeninė nuoroda</h2>
+      <div style="font-size:14px; line-height:1.5">Šią nuorodą galite dėti į el. pašto parašą ar siųsti klientams – ji atidaro Jūsų vizitinę su mygtukais „Save Contact“, „Call“, „Email“.</div>
+      <div class="linkbox"><input id="link" readonly><button type="button" id="copy">Kopijuoti</button></div>
+    </div>
+
+    <div class="panel phoneqr" id="phonepanel">
+      <h2>Tęsti telefone</h2>
+      <canvas id="qrphone" width="360" height="360"></canvas>
+      <div class="note">Nuskenuokite iPhone kamera – generatorius atsidarys su jau įvestais duomenimis. Ten paspauskite „Add to Apple Wallet“.</div>
+    </div>
+  </section>
+
+  <p class="note" style="text-align:center">Duomenys niekur nesaugomi: kortelė sukuriama Jūsų naršyklėje, o kontaktai įrašomi tik į pačią nuorodą ir QR kodą.</p>
+</main>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var BASE = new URL('./', location.href).href;
+  var cardUrl = '', passData = null, current = null;
+
+  function b64url(obj){
+    var bytes = new TextEncoder().encode(JSON.stringify(obj)), bin = '';
+    for (var i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  }
+  function unb64url(s){
+    try{ s = s.replace(/-/g,'+').replace(/_/g,'/'); while (s.length % 4) s += '=';
+      var bin = atob(s), b = new Uint8Array(bin.length); for (var i=0;i<bin.length;i++) b[i] = bin.charCodeAt(i);
+      return JSON.parse(new TextDecoder().decode(b)); }catch(e){ return null; }
+  }
+  function drawQR(canvas, text){
+    var q = qrcode(0, 'M'); q.addData(text); q.make();
+    var n = q.getModuleCount(), quiet = 4, total = n + quiet*2;
+    var ctx = canvas.getContext('2d'), s = Math.floor(canvas.width / total), off = Math.floor((canvas.width - s*total)/2);
+    ctx.fillStyle = '#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#072A52';
+    for (var r=0;r<n;r++) for (var c=0;c<n;c++) if (q.isDark(r,c)) ctx.fillRect(off+(c+quiet)*s, off+(r+quiet)*s, s, s);
+  }
+  function clean(v){ return v.replace(/[\u0000-\u001f]/g,'').replace(/\s+/g,' ').trim(); }
+
+  function read(){
+    var d = { n: clean($('n').value), t: clean($('t').value), e: clean($('e').value).toLowerCase(), p: clean($('p').value) };
+    var l = clean($('l').value);
+    if (l && !/^https?:\/\//i.test(l)) l = 'https://' + l;
+    if (l) d.l = l.replace(/^http:/i,'https:');
+    return d;
+  }
+  function validate(d){
+    var bad = [];
+    ['n','t','e','p','l'].forEach(function(k){ $(k).classList.remove('bad'); });
+    if (d.n.length < 3) bad.push(['n','Įveskite vardą ir pavardę.']);
+    if (!d.t) bad.push(['t','Įveskite pareigas.']);
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.e)) bad.push(['e','Patikrinkite el. pašto adresą.']);
+    if (!/^\+?[0-9 ()-]{6,}$/.test(d.p)) bad.push(['p','Telefoną įveskite skaičiais, pvz. +370 600 00000.']);
+    if (d.l && !/^https:\/\/([a-z]{2,3}\.)?linkedin\.com\/[^\s"<>]+$/i.test(d.l)) bad.push(['l','LinkedIn nuoroda turi prasidėti https://www.linkedin.com/']);
+    bad.forEach(function(b){ $(b[0]).classList.add('bad'); });
+    $('msg').textContent = bad.length ? bad[0][1] : '';
+    if (bad.length) $(bad[0][0]).focus();
+    return !bad.length;
+  }
+
+  function build(d){
+    current = d;
+    cardUrl = BASE + 'vizitine.html#d=' + b64url(d);
+    $('pv-n').textContent = d.n; $('pv-t').textContent = d.t; $('pv-e').textContent = d.e; $('pv-p').textContent = d.p;
+    drawQR($('qr'), cardUrl);
+    drawQR($('qrphone'), BASE + 'kurti.html#d=' + b64url(d));
+    $('link').value = cardUrl;
+    $('openpage').href = cardUrl;
+    $('result').hidden = false;
+    passData = null;
+    $('result').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  async function sha1hex(buf){
+    var h = await crypto.subtle.digest('SHA-1', buf);
+    return Array.prototype.map.call(new Uint8Array(h), function(b){ return ('0' + b.toString(16)).slice(-2); }).join('');
+  }
+  function uuid(){
+    if (crypto.randomUUID) return crypto.randomUUID().toUpperCase();
+    var b = crypto.getRandomValues(new Uint8Array(16)), h = Array.prototype.map.call(b, function(x){ return ('0'+x.toString(16)).slice(-2); }).join('');
+    return (h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20)).toUpperCase();
+  }
+
+  async function makePass(d){
+    // Reuse the AFR artwork from the reference card on this site
+    var ref = await (await fetch('renata-afr.pkpass', {cache:'no-store'})).arrayBuffer();
+    var refZip = await JSZip.loadAsync(ref);
+    var refPass = JSON.parse(await refZip.file('pass.json').async('string'));
+    var images = ['icon@2x.png','icon@3x.png','logo@2x.png','logo@3x.png'];
+    var tel = d.p.replace(/[^0-9+]/g,'');
+    var back = [
+      {key:'b_name', label:'Name', value:d.n},
+      {key:'b_title', label:'Position', value:d.t},
+      {key:'b_company', label:'Company', value:'Alliance for Recruitment (AFR)'},
+      {key:'b_phone', label:'Phone', value:tel, dataDetectorTypes:['PKDataDetectorTypePhoneNumber']},
+      {key:'b_email', label:'Email', value:d.e, dataDetectorTypes:['PKDataDetectorTypeLink']},
+      {key:'b_web', label:'Website', value:'https://afr.lt', dataDetectorTypes:['PKDataDetectorTypeLink']}
+    ];
+    if (d.l) back.push({key:'b_li', label:'LinkedIn', value:d.l, dataDetectorTypes:['PKDataDetectorTypeLink']});
+    back.push({key:'b_card', label:'Digital business card', value:cardUrl, dataDetectorTypes:['PKDataDetectorTypeLink']});
+    var pass = {
+      formatVersion: 1,
+      teamIdentifier: refPass.teamIdentifier,
+      passTypeIdentifier: refPass.passTypeIdentifier,
+      serialNumber: uuid(),
+      organizationName: 'Alliance for Recruitment',
+      description: 'AFR Digital Business Card – ' + d.n,
+      logoText: 'Alliance for Recruitment',
+      foregroundColor: 'rgba(255, 255, 255, 1.00)',
+      backgroundColor: 'rgba(13, 64, 117, 1.00)',
+      labelColor: 'rgba(207, 221, 238, 1.00)',
+      barcodes: [{message: cardUrl, format: 'PKBarcodeFormatQR', messageEncoding: 'iso-8859-1', altText: 'SCAN TO CONNECT'}],
+      generic: {
+        headerFields: [{key:'cardtype', label:'DIGITAL', value:'BUSINESS CARD'}],
+        primaryFields: [{key:'name', label:d.t.toUpperCase(), value:d.n}],
+        secondaryFields: [{key:'email', label:'EMAIL', value:d.e},
+                          {key:'phone', label:'PHONE', value:d.p, textAlignment:'PKTextAlignmentRight'}],
+        auxiliaryFields: [{key:'web', label:'WEBSITE', value:'afr.lt'},
+                          {key:'tag', label:'', value:'#ElevateYourGame', textAlignment:'PKTextAlignmentRight'}],
+        backFields: back
+      }
+    };
+    var files = {};
+    for (var i=0;i<images.length;i++) files[images[i]] = await refZip.file(images[i]).async('uint8array');
+    files['pass.json'] = new TextEncoder().encode(JSON.stringify(pass, null, 2));
+    var manifest = {};
+    for (var k in files) manifest[k] = await sha1hex(files[k]);
+    var zip = new JSZip();
+    for (var f in files) zip.file(f, files[f]);
+    zip.file('manifest.json', JSON.stringify(manifest, null, 2));
+    return zip.generateAsync({type:'blob', mimeType:'application/vnd.apple.pkpass', compression:'DEFLATE'});
+  }
+
+  $('f').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var d = read();
+    if (validate(d)) build(d);
+  });
+
+  $('addwallet').addEventListener('click', async function(){
+    var btn = this; btn.disabled = true;
+    try{
+      var blob = await makePass(current);
+      var url = URL.createObjectURL(blob);
+      var ua = navigator.userAgent || '';
+      var iOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      var fname = 'AFR-' + (current.n.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'card') + '.pkpass';
+      if (iOS) { location.href = url; }
+      else { var a = document.createElement('a'); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove(); }
+    }catch(e){
+      $('walletnote').textContent = 'Nepavyko sukurti kortelės (' + e.message + '). Patikrinkite interneto ryšį ir bandykite dar kartą.';
+    }finally{ btn.disabled = false; }
+  });
+
+  $('dlqr').addEventListener('click', function(){
+    var big = document.createElement('canvas'); big.width = big.height = 1200;
+    drawQR(big, cardUrl);
+    var a = document.createElement('a'); a.href = big.toDataURL('image/png');
+    a.download = 'AFR-QR-' + (current.n.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'-') || 'card') + '.png';
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+
+  $('copy').addEventListener('click', function(){
+    var b = this;
+    (navigator.clipboard ? navigator.clipboard.writeText(cardUrl) : Promise.reject()).then(function(){
+      b.textContent = 'Nukopijuota';
+    }, function(){ $('link').select(); document.execCommand('copy'); b.textContent = 'Nukopijuota'; });
+    setTimeout(function(){ b.textContent = 'Kopijuoti'; }, 2000);
+  });
+
+  // Prefill from a "continue on phone" link
+  var m = /[#&]d=([A-Za-z0-9_-]+)/.exec(location.hash || '');
+  if (m){
+    var d = unb64url(m[1]);
+    if (d){ $('n').value = d.n || ''; $('t').value = d.t || ''; $('e').value = d.e || ''; $('p').value = d.p || ''; $('l').value = d.l || '';
+      if (validate(read())) build(read()); }
+  }
+})();
+</script>
+</body>
+</html>
