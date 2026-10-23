@@ -1,0 +1,12 @@
+BEGIN:VCARD
+VERSION:3.0
+N;CHARSET=UTF-8:Jevtušenkaitė;Renata;;;
+FN;CHARSET=UTF-8:Renata Jevtušenkaitė
+ORG;CHARSET=UTF-8:Alliance for Recruitment (AFR)
+TITLE;CHARSET=UTF-8:Business Development Manager
+TEL;TYPE=WORK,CELL,VOICE:+37066038478
+EMAIL;TYPE=INTERNET,WORK,PREF:rje@afr.lt
+URL;TYPE=WORK:https://afr.lt
+item1.URL:https://www.linkedin.com/in/renata-jevtu%C5%A1enkait%C4%97-5a2340170
+item1.X-ABLabel:LinkedIn
+END:VCARD
