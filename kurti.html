@@ -65,6 +65,7 @@
   .linkbox button{flex:0 0 auto; font:600 13px var(--font); padding:0 14px; border-radius:12px; border:1px solid var(--line); background:#FBFAF7; color:var(--navy); cursor:pointer}
   .steps{margin:8px 0 0; padding-left:20px; font-size:14px; line-height:1.55}
   .note{font-size:12.5px; color:var(--muted); line-height:1.5; margin-top:12px}
+  .btn[hidden], .note[hidden], #android[hidden]{display:none}
   .phoneqr{display:none; text-align:center}
   .phoneqr canvas{width:180px; height:180px}
   @media (min-width:700px){ .phoneqr{display:block} }
@@ -113,7 +114,17 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="5" width="20" height="15" rx="3"/><path d="M2 10h20"/></svg>
         Add to Apple Wallet
       </button>
-      <div class="note" id="walletnote">iPhone: paspaudus atsidarys kortelės peržiūra – viršuje dešinėje paspauskite „Add“. Jei naudojate kompiuterį, nuskenuokite QR žemiau telefonu ir paspauskite šį mygtuką ten.</div>
+      <div class="note" id="walletnote">iPhone (reikia iOS 27 ar naujesnės): paspaudus atsidarys kortelės peržiūra – viršuje dešinėje paspauskite „Add“. Jei naudojate kompiuterį, nuskenuokite QR žemiau telefonu ir paspauskite šį mygtuką ten.</div>
+      <div id="android" hidden>
+        <button class="btn primary" id="dlqr-android" type="button">1. Atsisiųsti QR kodą</button>
+        <ol class="steps">
+          <li>Atidarykite <b>Google Wallet</b> (jei nėra – įdiekite iš Play Store).</li>
+          <li>Paspauskite <b>Add to Wallet</b> (+) → <b>Photo</b> (arba <b>Everything else</b>).</li>
+          <li>Pasirinkite ką tik atsisiųstą QR kodo paveikslėlį.</li>
+          <li>Pavadinimas: <b id="gw-name">AFR</b>, tada <b>Add</b>.</li>
+        </ol>
+        <div class="note">Kortelė atsiras Google Wallet. Klientas nuskenuos jos QR kodą ir išsisaugos Jūsų kontaktą.</div>
+      </div>
       <a class="btn ghost" id="openpage" href="#" target="_blank" rel="noopener">Atidaryti mano vizitinės puslapį</a>
       <button class="btn ghost" id="dlqr" type="button">Atsisiųsti QR kodą (PNG)</button>
     </div>
@@ -127,7 +138,7 @@
     <div class="panel phoneqr" id="phonepanel">
       <h2>Tęsti telefone</h2>
       <canvas id="qrphone" width="360" height="360"></canvas>
-      <div class="note">Nuskenuokite iPhone kamera – generatorius atsidarys su jau įvestais duomenimis. Ten paspauskite „Add to Apple Wallet“.</div>
+      <div class="note">Nuskenuokite telefono kamera (iPhone ar Samsung) – generatorius atsidarys su jau įvestais duomenimis ir parodys, ką daryti toliau.</div>
     </div>
   </section>
 
@@ -184,6 +195,7 @@
   function build(d){
     current = d;
     cardUrl = BASE + 'vizitine.html#d=' + b64url(d);
+    $('gw-name').textContent = 'AFR – ' + d.n;
     $('pv-n').textContent = d.n; $('pv-t').textContent = d.t; $('pv-e').textContent = d.e; $('pv-p').textContent = d.p;
     drawQR($('qr'), cardUrl);
     drawQR($('qrphone'), BASE + 'kurti.html#d=' + b64url(d));
@@ -275,13 +287,21 @@
     }finally{ btn.disabled = false; }
   });
 
-  $('dlqr').addEventListener('click', function(){
+  function downloadQR(){
     var big = document.createElement('canvas'); big.width = big.height = 1200;
     drawQR(big, cardUrl);
     var a = document.createElement('a'); a.href = big.toDataURL('image/png');
     a.download = 'AFR-QR-' + (current.n.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'-') || 'card') + '.png';
     document.body.appendChild(a); a.click(); a.remove();
-  });
+  }
+  $('dlqr').addEventListener('click', downloadQR);
+  $('dlqr-android').addEventListener('click', downloadQR);
+
+  // Android (Samsung etc.): Apple Wallet is not available – show Google Wallet steps instead
+  if (/Android/i.test(navigator.userAgent || '')) {
+    $('addwallet').hidden = true; $('walletnote').hidden = true; $('dlqr').hidden = true;
+    $('android').hidden = false;
+  }
 
   $('copy').addEventListener('click', function(){
     var b = this;
